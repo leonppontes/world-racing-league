@@ -41,6 +41,7 @@ export async function createTeamsHandler(req: Request, res: Response) {
         sponsorship INT,
         powerIndex INT,
         tier VARCHAR(255),
+        reliability INT,
         driver1 INT REFERENCES drivers(id),
         driver2 INT REFERENCES drivers(id),
         driver3 INT REFERENCES drivers(id)
@@ -54,11 +55,11 @@ export async function createTeamsHandler(req: Request, res: Response) {
     const teamsData = generateRandomTeamsData(driverIds, 20, drivers);
 
     for (const teamData of teamsData) {
-      const { name, power, aero, humanResources, sponsorship, powerIndex, tier, driver1, driver2, driver3 } = teamData;
-      const values = [name, power, aero, humanResources, sponsorship, powerIndex, tier, driver1, driver2, driver3];
+      const { name, power, aero, humanResources, sponsorship, powerIndex, tier, reliability, driver1, driver2, driver3 } = teamData;
+      const values = [name, power, aero, humanResources, sponsorship, powerIndex, tier, reliability, driver1, driver2, driver3];
       const result = await client.query(`
-        INSERT INTO teams (name, power, aero, humanResources, sponsorship, powerIndex, tier, driver1, driver2, driver3)
-        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
+        INSERT INTO teams (name, power, aero, humanResources, sponsorship, powerIndex, tier, reliability, driver1, driver2, driver3)
+        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
         RETURNING id
       `, values);
 
@@ -94,9 +95,9 @@ function generateRandomTeamsData(driverIds: number[], count: number, drivers: an
     const aero = Math.floor(Math.random() * 10) + 1;
     const humanResources = Math.floor(Math.random() * 10) + 1;
     const sponsorship = Math.floor(Math.random() * 10) + 1;
-    const powerIndex = power + aero + humanResources + sponsorship;
-
-    teamsData.push({ name, power, aero, humanResources, sponsorship, powerIndex });
+    const reliability = Math.floor(Math.random() * 10) + 1;
+    const powerIndex = power + aero + humanResources + sponsorship + reliability;
+    teamsData.push({ name, power, aero, humanResources, sponsorship, powerIndex, reliability });
   }
 
   // Sort teams based on powerIndex (descending order)
