@@ -6,11 +6,13 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const createDriversRoute_1 = require("./createDriversRoute");
 const createTeamsRoute_1 = require("./createTeamsRoute");
+const testRaceRoute_1 = require("./testRaceRoute");
 const app = (0, express_1.default)();
 const port = 3000;
 // Register the route handlers
 app.get('/createDrivers', createDriversRoute_1.createDriversHandler);
 app.get('/createTeams', createTeamsRoute_1.createTeamsHandler);
+app.get('/testRace', testRaceRoute_1.testRaceHandler);
 // Start the server
 app.listen(port, () => {
     console.log(`API server listening at http://localhost:${port}`);
