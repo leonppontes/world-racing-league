@@ -1,6 +1,13 @@
 import { Request, Response } from 'express';
 import { Pool } from 'pg';
 
+interface Ranking {
+  position: number;
+  time: string;
+  driver: any;
+  team: any;
+}
+
 export async function testRaceHandler(req: Request, res: Response) {
   try {
     const connectionConfig = {
@@ -23,7 +30,7 @@ export async function testRaceHandler(req: Request, res: Response) {
       ORDER BY seconds ASC
     `);
 
-    const rankings = result.rows.map((row: any, index: number) => {
+    const rankings: Ranking[] = result.rows.map((row: any, index: number) => {
       const randomValue = Math.random() * 2.5; // Generate a random value between 0 and 2.5 for each row
       const seconds = row.seconds - randomValue;
       return {
@@ -32,6 +39,16 @@ export async function testRaceHandler(req: Request, res: Response) {
         driver: row.fullname,
         team: row.team
       };
+    });
+
+    rankings.sort((a, b) => {
+      const secondsA = parseFloat(a.time.substring(3));
+      const secondsB = parseFloat(b.time.substring(3));
+      return secondsA - secondsB;
+    });
+
+    rankings.forEach((ranking, index) => {
+      ranking.position = index + 1;
     });
 
     client.release();

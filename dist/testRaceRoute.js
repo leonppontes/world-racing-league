@@ -31,6 +31,14 @@ async function testRaceHandler(req, res) {
                 team: row.team
             };
         });
+        rankings.sort((a, b) => {
+            const secondsA = parseFloat(a.time.substring(3));
+            const secondsB = parseFloat(b.time.substring(3));
+            return secondsA - secondsB;
+        });
+        rankings.forEach((ranking, index) => {
+            ranking.position = index + 1;
+        });
         client.release();
         res.json(rankings);
     }
