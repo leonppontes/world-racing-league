@@ -15,18 +15,22 @@ async function testRaceHandler(req, res) {
         const client = await pool.connect();
         // Retrieve drivers from the teams with tier 'wrl' and calculate their rankings
         const result = await client.query(`
-            SELECT drivers.fullname, (60 - drivers.skill - teams.humanresources - (teams.power*0.5) - (teams.aero*0.5)) AS seconds, teams.name AS team
-             FROM drivers
-            INNER JOIN teams ON drivers.team::INTEGER = teams.id
-            WHERE teams.tier = 'wrl'
-            ORDER BY seconds ASC
-        `);
-        const rankings = result.rows.map((row, index) => ({
-            position: index + 1,
-            time: '29m' + row.seconds,
-            driver: row.fullname,
-            team: row.team
-        }));
+      SELECT drivers.fullname, (60 - drivers.skill - teams.humanresources - (teams.power*0.5) - (teams.aero*0.5)) AS seconds, teams.name AS team
+      FROM drivers
+      INNER JOIN teams ON drivers.team::INTEGER = teams.id
+      WHERE teams.tier = 'wrl'
+      ORDER BY seconds ASC
+    `);
+        const rankings = result.rows.map((row, index) => {
+            const randomValue = Math.random() * 2.5; // Generate a random value between 0 and 2.5 for each row
+            const seconds = row.seconds - randomValue;
+            return {
+                position: index + 1,
+                time: '29m' + seconds,
+                driver: row.fullname,
+                team: row.team
+            };
+        });
         client.release();
         res.json(rankings);
     }
